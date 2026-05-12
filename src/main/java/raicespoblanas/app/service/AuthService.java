@@ -45,4 +45,11 @@ public class AuthService {
         user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
         return userRepository.save(user);
     }
+    // Añade esto a AuthService.java
+
+    public String getUserRole(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        return user.getRole().getName(); // Devuelve "ROLE_ARTISAN", "ROLE_CUSTOMER", etc.
+    }
 }

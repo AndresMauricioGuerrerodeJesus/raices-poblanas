@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { LogIn } from 'lucide-react';
-import { login } from '../api/auth'; // Asegúrate de tener este archivo creado
-import { Link } from 'react-router-dom'; // Añade esto a tus imports
+import { useNavigate, Link } from 'react-router-dom';
+import { LogIn, UserPlus, Store } from 'lucide-react';
+import { login } from '../api/auth';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -18,69 +17,94 @@ const Login = () => {
       navigate('/');
       window.location.reload();
     } catch (err) {
-      setError('Acceso denegado. Verifica tus credenciales de artesano.');
+      setError('Acceso denegado. Verifica tus credenciales.');
     }
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4">
+    <div className="min-h-[80vh] flex items-center justify-center px-4 bg-raices-light/30">
       <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="bg-white p-10 rounded-3xl shadow-2xl border border-raices-brown/5 max-w-md w-full"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white p-8 md:p-12 rounded-[2rem] shadow-2xl border border-raices-brown/10 max-w-md w-full"
       >
-        <div className="flex flex-col items-center mb-8">
-          <div className="bg-raices-green/10 p-4 rounded-full mb-4">
-            <LogIn className="text-raices-green" size={32} />
+        {/* Cabecera del Login */}
+        <div className="flex flex-col items-center mb-10">
+          <div className="bg-raices-brown/10 p-4 rounded-2xl mb-4 text-raices-brown">
+            <LogIn size={32} />
           </div>
-          <h2 className="font-serif text-3xl text-raices-brown font-bold">Bienvenido</h2>
-          <p className="text-slate-500 text-sm mt-2">Accede a tu cuenta de Raíces Poblanas</p>
+          <h2 className="font-serif text-3xl text-raices-brown font-bold text-center">Bienvenido de nuevo</h2>
+          <p className="text-slate-500 text-sm mt-2">Ingresa a tu cuenta de Raíces Poblanas</p>
         </div>
         
-        {error && <p className="bg-red-50 text-red-600 p-3 rounded-xl mb-6 text-xs text-center font-bold border border-red-100">{error}</p>}
+        {error && (
+          <p className="bg-red-50 text-red-600 p-4 rounded-2xl mb-6 text-xs text-center font-bold border border-red-100">
+            {error}
+          </p>
+        )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block text-xs uppercase tracking-widest font-bold text-slate-400 mb-2 ml-1">Usuario</label>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <label className="block text-[10px] uppercase tracking-[0.2em] font-black text-slate-400 ml-1">
+              Nombre de Usuario
+            </label>
             <input 
               type="text" 
               placeholder="Ej. maury_artesano"
-              className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:bg-white focus:border-raices-green outline-none transition-all"
+              className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:bg-white focus:border-raices-green focus:ring-4 focus:ring-raices-green/5 outline-none transition-all text-slate-700"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
             />
           </div>
-          <div>
-            <label className="block text-xs uppercase tracking-widest font-bold text-slate-400 mb-2 ml-1">Contraseña</label>
+
+          <div className="space-y-2">
+            <label className="block text-[10px] uppercase tracking-[0.2em] font-black text-slate-400 ml-1">
+              Contraseña
+            </label>
             <input 
               type="password" 
               placeholder="••••••••"
-              className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:bg-white focus:border-raices-green outline-none transition-all"
+              className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:bg-white focus:border-raices-green focus:ring-4 focus:ring-raices-green/5 outline-none transition-all text-slate-700"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
+
+          {/* BOTÓN CORREGIDO: Café oscuro con texto blanco visible */}
           <button 
             type="submit"
-            className="w-full bg-raices-brown text-white py-5 rounded-2xl font-bold hover:bg-raices-brown/90 transition-all shadow-xl shadow-raices-brown/20 active:scale-95"
+            className="w-full bg-[#5D4037] text-white py-5 rounded-2xl font-bold hover:bg-[#4E342E] transition-all shadow-xl shadow-raices-brown/20 active:scale-[0.98] flex justify-center items-center gap-2"
           >
-            Iniciar Sesión
+            <LogIn size={20} /> Iniciar Sesión
           </button>
         </form>
-        <div className="mt-8 pt-6 border-t border-slate-100 text-center">
-          <p className="text-slate-500 text-sm">
-            ¿Aún no eres parte de la comunidad?
-          </p>
-          <Link 
-            to="/register" 
-            className="inline-block mt-3 text-raices-green font-bold hover:text-green-700 transition-colors underline underline-offset-4"
-          >
-            Regístrate aquí como Cliente o Artesano
-          </Link>
-        </div>
 
+        {/* SECCIÓN DE REGISTRO RESTAURADA */}
+        <div className="mt-10 pt-8 border-t border-slate-100">
+          <p className="text-slate-400 text-[10px] uppercase tracking-widest text-center font-bold mb-6">
+            ¿No tienes cuenta?
+          </p>
+          
+          <div className="grid grid-cols-1 gap-3">
+            <Link 
+              to="/register" 
+              className="flex items-center justify-center gap-3 w-full py-4 px-6 rounded-2xl border-2 border-raices-green text-raices-green font-bold hover:bg-raices-green hover:text-white transition-all text-sm group"
+            >
+              <UserPlus size={18} className="group-hover:scale-110 transition-transform" />
+              Registrarme como Cliente
+            </Link>
+            
+            <Link 
+              to="/register?role=ARTISAN" 
+              className="flex items-center justify-center gap-3 w-full py-4 px-6 rounded-2xl border-2 border-raices-accent text-raices-accent font-bold hover:bg-raices-accent hover:text-white transition-all text-sm group"
+            >
+              <Store size={18} className="group-hover:scale-110 transition-transform" />
+              Unirme como Artesano
+            </Link>
+          </div>
+        </div>
       </motion.div>
     </div>
   );

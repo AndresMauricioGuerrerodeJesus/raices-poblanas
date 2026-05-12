@@ -1,40 +1,55 @@
-import { TrendingUp, Package, ShoppingCart, DollarSign } from 'lucide-react';
+import { Package, DollarSign, PlusCircle, ShoppingBag } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const ArtisanDashboard = () => {
-  const stats = [
-    { label: 'Ventas Totales', value: '$12,450', icon: DollarSign, color: 'bg-green-100 text-green-600' },
-    { label: 'Pedidos Activos', value: '8', icon: ShoppingCart, color: 'bg-blue-100 text-blue-600' },
-    { label: 'Productos en Catálogo', value: '24', icon: Package, color: 'bg-amber-100 text-amber-600' },
-    { label: 'Crecimiento Mes', value: '+15%', icon: TrendingUp, color: 'bg-purple-100 text-purple-600' },
-  ];
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem('user'));
 
   return (
-    <div className="p-8 max-w-7xl mx-auto mt-16">
-      <h1 className="text-3xl font-serif font-bold text-raices-brown mb-8">Panel de Control Artesanal</h1>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        {stats.map((stat, i) => (
-          <div key={i} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-            <div className={`w-12 h-12 ${stat.color} rounded-xl flex items-center justify-center mb-4`}>
-              <stat.icon size={24} />
-            </div>
-            <p className="text-slate-500 text-sm font-medium">{stat.label}</p>
-            <h3 className="text-2xl font-bold text-slate-800">{stat.value}</h3>
-          </div>
-        ))}
-      </div>
+    <div className="max-w-7xl mx-auto px-4 py-12">
+      <header className="mb-12">
+        <h2 className="font-serif text-4xl text-raices-brown font-bold italic">
+          Bienvenido, <span className="text-raices-green">{user?.username}</span>
+        </h2>
+        <p className="text-slate-500 mt-2 font-medium">Panel de control de tu taller artesanal.</p>
+      </header>
 
-      <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
-        <h2 className="text-xl font-bold text-raices-brown mb-4">Ventas Recientes</h2>
-        <div className="h-64 flex items-end justify-between gap-2 px-4 border-b border-slate-100">
-          {/* Gráfico Mock */}
-          {[40, 70, 45, 90, 65, 80, 100].map((h, i) => (
-            <div key={i} style={{ height: `${h}%` }} className="w-full bg-raices-green/20 hover:bg-raices-green transition-colors rounded-t-lg"></div>
-          ))}
+      {/* TARJETAS DE ACCESO RÁPIDO */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+        {/* CONECTOR A PRODUCTOS */}
+        <div
+          onClick={() => navigate('/artesano/producto')}
+          className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all cursor-pointer group"
+        >
+          <div className="bg-raices-green/10 w-16 h-16 rounded-2xl flex items-center justify-center text-raices-green mb-6 group-hover:bg-raices-green group-hover:text-white transition-colors">
+            <Package size={32} />
+          </div>
+          <h3 className="font-serif text-2xl font-bold text-raices-brown">Mis Productos</h3>
+          <p className="text-slate-500 mt-2">Gestiona tu catálogo, edita precios y ve tus piezas únicas.</p>
         </div>
-        <div className="flex justify-between mt-2 text-xs text-slate-400 font-medium uppercase tracking-wider">
-          <span>Lun</span><span>Mar</span><span>Mie</span><span>Jue</span><span>Vie</span><span>Sab</span><span>Dom</span>
+
+        {/* BOTÓN "NUEVA PIEZA" RÁPIDO */}
+        <div
+          onClick={() => navigate('/artesano/producto')} // El componente ya tiene el modal de "Nuevo"
+          className="bg-[#5D4037] p-8 rounded-[2rem] shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all cursor-pointer text-white group"
+        >
+          <div className="bg-white/20 w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
+            <PlusCircle size={32} />
+          </div>
+          <h3 className="font-serif text-2xl font-bold">Registrar Obra</h3>
+          <p className="text-white/70 mt-2">Crea una nueva ficha técnica y genera su código QR de autenticidad.</p>
         </div>
+
+        {/* MÉTRICAS DE VENTA (PRÓXIMAMENTE) */}
+        <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-xl opacity-60">
+          <div className="bg-raices-accent/10 w-16 h-16 rounded-2xl flex items-center justify-center text-raices-accent mb-6">
+            <DollarSign size={32} />
+          </div>
+          <h3 className="font-serif text-2xl font-bold text-raices-brown">Mis Ventas</h3>
+          <p className="text-slate-500 mt-2">Próximamente: Historial de ingresos y pedidos completados.</p>
+        </div>
+
       </div>
     </div>
   );

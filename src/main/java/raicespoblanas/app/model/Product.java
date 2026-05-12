@@ -3,33 +3,17 @@ package raicespoblanas.app.model;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "products")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productId;
 
     @Column(unique = true, updatable = false)
-    private UUID uniquePieceId = UUID.randomUUID(); // Cambiado de unique_piece_id
+    private UUID uniquePieceId = UUID.randomUUID();
 
     @ManyToOne
     @JoinColumn(name = "artisan_id", nullable = false)
@@ -42,21 +26,39 @@ public class Product {
     @Column(nullable = false, length = 150)
     private String name;
 
-    private String collectionName; // Cambiado de collection_name
+    private String collectionName;
     private String description;
     private String materials;
 
     @Column(nullable = false)
     private BigDecimal price;
 
-    @Column(insertable = false, updatable = false)
-    private BigDecimal appCommission; // Cambiado de app_commission
-
-    @Column(insertable = false, updatable = false)
-    private BigDecimal artisanGain; // Cambiado de artisan_gain
+    private Integer stockQuantity = 1; // AÑADIDO: Atributo que faltaba
 
     private String status = "Available";
 
     @Column(updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    // --- MÉTODOS MANUALES (Failsafe contra errores de Lombok) ---
+    public Long getProductId() { return productId; }
+    public void setProductId(Long productId) { this.productId = productId; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public BigDecimal getPrice() { return price; }
+    public void setPrice(BigDecimal price) { this.price = price; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public Integer getStockQuantity() { return stockQuantity; }
+    public void setStockQuantity(Integer stockQuantity) { this.stockQuantity = stockQuantity; }
+
+    public Artisan getArtisan() { return artisan; }
+    public void setArtisan(Artisan artisan) { this.artisan = artisan; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }

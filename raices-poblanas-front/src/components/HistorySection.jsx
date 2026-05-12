@@ -1,9 +1,10 @@
 import { motion } from 'framer-motion';
-import manosImg from '../assets/artesana-manos.png'; // Asegúrate de tener la imagen
+import manosImg from '../assets/artesana-manos.png';
 
 const HistorySection = () => {
   return (
-    <section className="py-24 bg-white">
+    // Agregamos id="historia" para que el navegador sepa dónde está esta sección
+    <section id="historia" className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           
@@ -39,14 +40,14 @@ const HistorySection = () => {
             </p>
             <div className="space-y-4">
               <div className="flex gap-4 items-start">
-                <div className="bg-raices-accent/20 p-2 rounded-lg text-raices-brown">01</div>
+                <div className="bg-raices-accent/20 p-2 rounded-lg text-raices-brown font-bold">01</div>
                 <div>
                   <h4 className="font-bold text-raices-brown">Comercio sin intermediarios</h4>
                   <p className="text-slate-500">El 85% de cada venta va directo al taller del artesano.</p>
                 </div>
               </div>
               <div className="flex gap-4 items-start">
-                <div className="bg-raices-accent/20 p-2 rounded-lg text-raices-brown">02</div>
+                <div className="bg-raices-accent/20 p-2 rounded-lg text-raices-brown font-bold">02</div>
                 <div>
                   <h4 className="font-bold text-raices-brown">Trazabilidad Tecnológica</h4>
                   <p className="text-slate-500">Usamos códigos únicos para certificar que tu pieza no es una imitación industrial.</p>
