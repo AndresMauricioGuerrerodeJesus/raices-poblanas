@@ -117,6 +117,17 @@ const ProductManagement = () => {
                 />
               </div>
 
+              <div className="md:col-span-2">
+                <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">URL de la Imagen</label>
+                <input
+                  type="text"
+                  placeholder="https://ejemplo.com/foto-artesania.jpg"
+                  className="w-full px-5 py-3 rounded-xl bg-slate-50 border border-slate-100 outline-none focus:border-raices-green"
+                  value={formData.imageUrl}
+                  onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
+                />
+              </div>
+
               <div>
                 <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Materiales</label>
                 <input

@@ -50,27 +50,15 @@ const Navbar = () => {
               <Store size={18} /> Tienda
             </Link>
 
-{/* LINKS POR ROL (Solo aparecen si está logueado) */}
-{user?.role === 'ROLE_ARTISAN' && (
+{/* Dentro de Navbar.jsx, busca la parte de los roles */}
+{(user?.role === 'ROLE_ARTISAN' || user?.role === 'ARTISAN') && (
   <div className="flex items-center gap-4 border-l pl-4 border-slate-200">
-    {/* Botón Principal (Dashboard) */}
     <Link to="/artesano/dashboard" className="flex items-center gap-1 text-raices-brown font-bold hover:text-raices-green transition-all">
       <LayoutDashboard size={18} /> Mi Panel
     </Link>
 
-    {/* Ver lista de productos */}
-    <Link to="/artesano/catalogo" className="flex items-center gap-1 text-slate-600 hover:text-raices-green font-medium transition-colors">
-      <PackagePlus size={18} /> Catálogo
-    </Link>
-
-    {/* Crear nueva pieza */}
     <Link to="/artesano/producto" className="flex items-center gap-1 text-slate-600 hover:text-raices-green font-medium transition-colors">
-      <Brush size={18} /> Nueva Pieza
-    </Link>
-
-    {/* Gestión de Pedidos */}
-    <Link to="/artesano/pedidos" className="flex items-center gap-1 text-slate-600 hover:text-raices-green font-medium transition-colors">
-      <ShoppingCart size={18} /> Ventas
+      <PackagePlus size={18} /> Mis Productos
     </Link>
   </div>
 )}

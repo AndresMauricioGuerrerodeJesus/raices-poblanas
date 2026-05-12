@@ -25,7 +25,7 @@ public class Product {
 
     @Column(nullable = false, length = 150)
     private String name;
-
+    private String imageUrl;
     private String collectionName;
     private String description;
     private String materials;
@@ -61,4 +61,7 @@ public class Product {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }

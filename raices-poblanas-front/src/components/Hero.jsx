@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import chalIMG from '../assets/hero-main.jpg';
 
 const Hero = () => {
   return (
@@ -33,7 +34,7 @@ const Hero = () => {
             </p>
 
             <div className="flex flex-wrap gap-4">
-              <Link to="/tienda" className="flex items-center gap-2 bg-raices-brown text-white px-8 py-4 rounded-xl font-bold hover:bg-raices-brown/90 transition-all shadow-lg shadow-raices-brown/20 group">
+              <Link to="/tienda" className="flex items-center gap-2 bg-raices-brown text-black px-8 py-4 rounded-xl font-bold hover:bg-raices-brown/90 transition-all shadow-lg shadow-raices-brown/20 group">
                 Explorar Galería
                 <ArrowRight className="group-hover:translate-x-1 transition-transform" />
               </Link>
@@ -69,7 +70,7 @@ const Hero = () => {
           >
             <div className="aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl rotate-2">
               <img 
-                src="https://images.unsplash.com/photo-1590736962236-492723707c57?q=80&w=1000&auto=format&fit=crop" 
+                src={chalIMG}
                 alt="Artesanía Poblana"
                 className="w-full h-full object-cover"
               />
