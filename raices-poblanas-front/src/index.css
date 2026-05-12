@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+/* El color de fondo artesanal que elegimos */
+body {
+  background-color: #FDFCF0;
+  margin: 0;
+  padding: 0;
+}
