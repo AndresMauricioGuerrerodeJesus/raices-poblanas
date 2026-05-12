@@ -24,7 +24,7 @@ import lombok.Setter;
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long notification_id;
+    private Long notificationId;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -33,8 +33,8 @@ public class Notification {
     @Column(nullable = false)
     private String message;
 
-    private boolean is_read = false;
+    private boolean isRead = false; // Cambiado de is_read a isRead
 
     @Column(updatable = false)
-    private LocalDateTime created_at = LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now(); // Cambiado de created_at a createdAt
 }

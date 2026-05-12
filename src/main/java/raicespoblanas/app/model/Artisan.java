@@ -13,28 +13,21 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 @Entity
 @Table(name = "artisans")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class Artisan {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long artisan_id;
+    private Long artisanId; // CAMBIADO de artisan_id
 
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
 
     private String bio;
-
-    @Column(nullable = false, length = 100)
     private String municipality;
-
+    
     @Lob
     private byte[] profile_picture;
 

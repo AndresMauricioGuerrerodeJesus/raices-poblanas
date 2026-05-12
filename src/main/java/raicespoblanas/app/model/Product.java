@@ -26,10 +26,10 @@ import lombok.Setter;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long product_id;
+    private Long productId;
 
     @Column(unique = true, updatable = false)
-    private UUID unique_piece_id = UUID.randomUUID();
+    private UUID uniquePieceId = UUID.randomUUID(); // Cambiado de unique_piece_id
 
     @ManyToOne
     @JoinColumn(name = "artisan_id", nullable = false)
@@ -42,7 +42,7 @@ public class Product {
     @Column(nullable = false, length = 150)
     private String name;
 
-    private String collection_name;
+    private String collectionName; // Cambiado de collection_name
     private String description;
     private String materials;
 
@@ -50,13 +50,13 @@ public class Product {
     private BigDecimal price;
 
     @Column(insertable = false, updatable = false)
-    private BigDecimal app_commission;
+    private BigDecimal appCommission; // Cambiado de app_commission
 
     @Column(insertable = false, updatable = false)
-    private BigDecimal artisan_gain;
+    private BigDecimal artisanGain; // Cambiado de artisan_gain
 
     private String status = "Available";
 
     @Column(updatable = false)
-    private LocalDateTime created_at = LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

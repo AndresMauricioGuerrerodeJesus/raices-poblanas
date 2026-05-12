@@ -1,17 +1,11 @@
 package raicespoblanas.app.service;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import raicespoblanas.app.model.Order;
-import raicespoblanas.app.model.Product;
-import raicespoblanas.app.model.User;
-import raicespoblanas.app.repository.OrderRepository;
-import raicespoblanas.app.repository.ProductRepository;
-import raicespoblanas.app.repository.UserRepository;
+import raicespoblanas.app.model.*;
+import raicespoblanas.app.repository.*;
+import java.util.List;
 
 @Service
 public class OrderService {
@@ -25,44 +19,41 @@ public class OrderService {
     private NotificationService notificationService;
 
     @Transactional
-    public Order checkout(Long customerId, Long productId, String address) {
-        User customer = userRepository.findById(customerId).get();
-        Product product = productRepository.findById(productId).get();
+    public Order processOrder(Long customerId, Long productId, String address) {
+        User customer = userRepository.findById(customerId)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-        // Validar disponibilidad
         if (!"Available".equals(product.getStatus())) {
-            throw new RuntimeException("La pieza ya ha sido vendida o no está disponible.");
+            throw new RuntimeException("La pieza ya no está disponible.");
         }
 
-        // Validar Billetera
-        if (customer.getWallet_balance().compareTo(product.getPrice()) < 0) {
-            throw new RuntimeException("Saldo insuficiente en tu billetera virtual.");
+        if (customer.getWalletBalance().compareTo(product.getPrice()) < 0) {
+            throw new RuntimeException("Saldo insuficiente en tu billetera.");
         }
 
-        // 1. Restar saldo
-        customer.setWallet_balance(customer.getWallet_balance().subtract(product.getPrice()));
+        // Cobro y actualización
+        customer.setWalletBalance(customer.getWalletBalance().subtract(product.getPrice()));
         userRepository.save(customer);
 
-        // 2. Crear Pedido
         Order order = new Order();
         order.setCustomer(customer);
-        order.setTotal_amount(product.getPrice());
-        order.setShipping_address(address);
-        order.setOrder_status("Paid");
+        order.setTotalAmount(product.getPrice());
+        order.setShippingAddress(address);
+        order.setOrderStatus("Paid");
         Order savedOrder = orderRepository.save(order);
 
-        // 3. Marcar como vendido
         product.setStatus("Sold");
         productRepository.save(product);
 
-        // 4. Notificar al Artesano
         notificationService.send(product.getArtisan().getUser(), 
-            "¡Venta Confirmada! Alguien compró tu pieza: " + product.getName());
+            "¡Venta! Han comprado tu pieza: " + product.getName());
 
         return savedOrder;
     }
 
-    public List<Order> getCustomerOrders(Long userId) {
+    public List<Order> getOrdersByUserId(Long userId) {
         return orderRepository.findByCustomer_UserId(userId);
     }
 }
