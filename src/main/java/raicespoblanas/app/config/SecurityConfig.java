@@ -32,11 +32,11 @@ public class SecurityConfig {
                 .requestMatchers("/api/products/catalog").permitAll()
                 .requestMatchers("/api/products/verify/**").permitAll()
                 .requestMatchers("/v3/api-docs/**",
-        "/v3/api-docs.yaml",
-        "/swagger-ui/**",
-        "/swagger-ui.html",
-        "/swagger-resources/**",
-        "/webjars/**").permitAll()
+                        "/v3/api-docs.yaml",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/swagger-resources/**",
+                        "/webjars/**").permitAll()
                 // Rutas protegidas: Requieren Token
                 .requestMatchers("/api/orders/**").hasAnyRole("CUSTOMER", "ADMIN")
                 .requestMatchers("/api/artisans/dashboard/**").hasAnyRole("ARTISAN", "ADMIN")
@@ -60,7 +60,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*")); // En producción, poner la URL de tu React
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // Puerto de Vite
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

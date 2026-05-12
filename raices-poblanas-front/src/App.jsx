@@ -1,29 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import HistorySection from './components/HistorySection';
-import Login from './pages/Login'; // <--- 1. ASEGÚRATE DE QUE ESTO ESTÉ AQUÍ
-import Register from './pages/Register';
-
-
-const Home = () => (
-  <>
-    <Hero />
-    <HistorySection />
-  </>
-);
-
-const Tienda = () => (
-  <div className="max-w-7xl mx-auto px-4 py-20">
-    <h2 className="font-serif text-4xl text-raices-brown">Catálogo de Artesanías</h2>
-  </div>
-);
-
-const QRVerify = () => (
-  <div className="max-w-7xl mx-auto px-4 py-20 text-center">
-    <h2 className="font-serif text-4xl text-raices-brown">Comprobador QR</h2>
-  </div>
-);
+import Login from './pages/Login';
+// Nuevas Importaciones
+import ArtisanDashboard from './pages/ArtisanDashboard';
+import ManageCatalog from './pages/ManageCatalog';
+import ManageProduct from './pages/ManageProduct';
+import ManageOrders from './pages/ManageOrders';
 
 function App() {
   return (
@@ -31,18 +14,18 @@ function App() {
       <div className="min-h-screen bg-raices-light">
         <Navbar />
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/tienda" element={<Tienda />} />
-          <Route path="/comprobador" element={<QRVerify />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<><Hero /></>} />
+          <Route path="/login" element={<Login />} />
           
-          {/* LA LÍNEA QUE FALTA ES ESTA: */}
-          <Route path="/login" element={<Login />} /> 
-          
+          {/* Rutas del Artesano */}
+          <Route path="/dashboard" element={<ArtisanDashboard />} />
+          <Route path="/gestionar-catalogo" element={<ManageCatalog />} />
+          <Route path="/gestionar-producto" element={<ManageProduct />} />
+          <Route path="/gestionar-producto/:id" element={<ManageProduct />} />
+          <Route path="/gestionar-pedidos" element={<ManageOrders />} />
         </Routes>
       </div>
     </Router>
   );
 }
-
 export default App;
