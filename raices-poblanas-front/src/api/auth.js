@@ -10,3 +10,21 @@ export const login = async (username, password) => {
   }
   return response.data;
 };
+
+// Agrega esto a tu archivo src/api/auth.js
+export const register = async (userData) => {
+  try {
+    // Nota: El 'role' se pasa como parámetro en tu controlador actual
+    const response = await axios.post(`${API_URL}/register?role=${userData.role}`, {
+      username: userData.username,
+      email: userData.email,
+      passwordHash: userData.password, // El backend lo encriptará
+      // Datos extra si es artesano
+      bio: userData.bio,
+      municipality: userData.municipality
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

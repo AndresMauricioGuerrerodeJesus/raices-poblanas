@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
 import { login } from '../api/auth'; // Asegúrate de tener este archivo creado
+import { Link } from 'react-router-dom'; // Añade esto a tus imports
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -68,6 +69,18 @@ const Login = () => {
             Iniciar Sesión
           </button>
         </form>
+        <div className="mt-8 pt-6 border-t border-slate-100 text-center">
+          <p className="text-slate-500 text-sm">
+            ¿Aún no eres parte de la comunidad?
+          </p>
+          <Link 
+            to="/register" 
+            className="inline-block mt-3 text-raices-green font-bold hover:text-green-700 transition-colors underline underline-offset-4"
+          >
+            Regístrate aquí como Cliente o Artesano
+          </Link>
+        </div>
+
       </motion.div>
     </div>
   );

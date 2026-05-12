@@ -3,6 +3,8 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import HistorySection from './components/HistorySection';
 import Login from './pages/Login'; // <--- 1. ASEGÚRATE DE QUE ESTO ESTÉ AQUÍ
+import Register from './pages/Register';
+
 
 const Home = () => (
   <>
@@ -32,6 +34,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/tienda" element={<Tienda />} />
           <Route path="/comprobador" element={<QRVerify />} />
+          <Route path="/register" element={<Register />} />
           
           {/* LA LÍNEA QUE FALTA ES ESTA: */}
           <Route path="/login" element={<Login />} /> 
