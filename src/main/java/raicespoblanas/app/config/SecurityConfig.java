@@ -29,36 +29,38 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        // 1. RUTAS PÚBLICAS (Todos pueden entrar sin Token)
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/products/catalog").permitAll()
-                        .requestMatchers("/api/products/verify/**").permitAll()
-                        .requestMatchers("/api/products/search/**").permitAll()
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
 
-                        // Permitir ver detalles de CUALQUIER producto para la tienda
+                // AQUÍ EMPIEZA EL BLOQUE DE AUTORIZACIÓN
+                .authorizeHttpRequests(auth -> auth
+
+                        // 1. REGLAS PÚBLICAS (Abierto para todo el mundo)
+                        .requestMatchers("/api/auth/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
+                        .requestMatchers("/api/products/catalog", "/api/products/verify/**", "/api/products/search/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/products/**").permitAll()
 
-                        // 2. RUTAS PRIVADAS (Requieren Rol de Artesano o Admin)
-                        // Gestión de Perfil de Artesano
+                        // 2. REGLAS PARA ARTESANOS (Requieren Token + Rol específico)
+                        // Nota: Spring busca el prefijo "ROLE_" automáticamente (ROLE_ARTISAN)
                         .requestMatchers("/api/artisans/**").hasAnyRole("ARTISAN", "ADMIN")
-
-                        // Gestión de Inventario (Solo artesanos crean/borran)
-                        .requestMatchers("/api/products/add").hasAnyRole("ARTISAN", "ADMIN")
+                        .requestMatchers("/api/products/add", "/api/products/update/**", "/api/products/delete/**").hasAnyRole("ARTISAN", "ADMIN")
                         .requestMatchers("/api/products/my-products/**").hasAnyRole("ARTISAN", "ADMIN")
-                        .requestMatchers("/api/products/update/**").hasAnyRole("ARTISAN", "ADMIN")
-                        .requestMatchers("/api/products/delete/**").hasAnyRole("ARTISAN", "ADMIN")
 
-                        // 3. CUALQUIER OTRA PETICIÓN: Requiere estar logueado
+                        // 3. REGLAS PARA CLIENTES / USUARIOS LOGUEADOS
+                        // Aquí puedes poner rutas de pedidos o carrito si quieres que solo logueados compren
+                        .requestMatchers("/api/orders/**").authenticated()
+
+                        // 4. EL "CATCH-ALL" (Debe ir al final de TODO)
+                        // Cualquier ruta que no coincida con lo anterior, pedirá estar logueado.
                         .anyRequest().authenticated()
                 );
 
-        // Añadir el filtro de JWT antes del filtro estándar de Spring
+        // Agregamos tu filtro JWT antes del filtro de usuario/contraseña
         http.addFilterBefore(jwtAuthFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
+    // ... (Mantén tus Beans de passwordEncoder, authenticationManager y corsConfigurationSource igual)
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {

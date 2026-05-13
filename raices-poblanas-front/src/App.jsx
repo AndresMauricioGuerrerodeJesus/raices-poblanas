@@ -12,6 +12,7 @@ import QRModule from './pages/QRModule';
 import ArtisanOrders from './pages/ArtisanOrders';
 import ArtisanProfile from './pages/ArtisanProfile';
 import Notifications from './pages/Notifications';
+import Cart from './pages/Cart';
 
 const Home = () => (<><Hero /><HistorySection /></>);
 
@@ -29,6 +30,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/historia" element={<HistorySection />} />
+          <Route path="/carrito" element={<Cart />} />
 
           {/* Rutas de Gestión del Artesano */}
           <Route path="/artesano" element={<Navigate to="/artesano/dashboard" replace />} />
