@@ -3,9 +3,12 @@ package raicespoblanas.app.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; // <--- IMPORTANTE
 
+import raicespoblanas.app.model.Artisan; // <--- ASEGÚRATE DE QUE EXISTA
 import raicespoblanas.app.model.Role;
 import raicespoblanas.app.model.User;
+import raicespoblanas.app.repository.ArtisanRepository; // <--- IMPORTANTE
 import raicespoblanas.app.repository.RoleRepository;
 import raicespoblanas.app.repository.UserRepository;
 
@@ -19,40 +22,52 @@ public class AuthService {
     private RoleRepository roleRepository;
 
     @Autowired
+    private ArtisanRepository artisanRepository; // <--- INYECCIÓN NECESARIA
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // MÉTODO DE LOGIN (EL QUE FALTABA)
+    // MÉTODO DE LOGIN
     public User authenticateUser(String username, String password) {
-        // 1. Verificar si el usuario existe
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Error: Usuario no encontrado."));
 
-        // 2. Verificar si la contraseña coincide (¡CUIDADO! No uses == , usa .matches)
         if (!passwordEncoder.matches(password, user.getPasswordHash())) {
             throw new RuntimeException("Error: Contraseña incorrecta.");
         }
-
-        return user; // Si todo está bien, devuelve el usuario para generar el JWT
+        return user;
     }
 
+    @Transactional
     public User registerUser(User user, String roleName) {
-        if (userRepository.existsByUsername(user.getUsername())) {
-            throw new RuntimeException("Error: El usuario ya existe.");
-        }
+        // 1. Cifrar contraseña y asignar rol
+        user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
         Role role = roleRepository.findByName(roleName)
                 .orElseThrow(() -> new RuntimeException("Error: Rol no encontrado."));
         user.setRole(role);
-        user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
-        return userRepository.save(user);
+
+        // 2. Guardar el Usuario
+        User savedUser = userRepository.save(user);
+
+        // 3. Si es Artesano, crear su perfil vinculado
+        if (roleName.contains("ARTISAN")) {
+            Artisan artisan = new Artisan();
+            artisan.setUser(savedUser); // MapsId se encarga de igualar los IDs automáticamente
+            artisan.setBio("Biografía pendiente de edición.");
+            artisan.setMunicipality("Sierra Norte");
+
+            artisanRepository.save(artisan);
+        }
+
+        return savedUser;
     }
-    // Añade esto a AuthService.java
 
     public String getUserRole(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        return user.getRole().getName(); // Devuelve "ROLE_ARTISAN", "ROLE_CUSTOMER", etc.
+        return user.getRole().getName();
     }
-    // Añade este método al final de la clase AuthService
+
     public User findByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));

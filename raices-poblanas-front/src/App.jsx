@@ -7,6 +7,7 @@ import Register from './pages/Register';
 import ArtisanDashboard from './pages/ArtisanDashboard';
 import ProductManagement from './pages/ProductManagement';
 import Store from './pages/Store';
+import ProductDetail from './pages/ProductDetail'; // <--- ESTE ES EL QUE FALTABA
 import QRModule from './pages/QRModule';
 import ArtisanOrders from './pages/ArtisanOrders';
 import ArtisanProfile from './pages/ArtisanProfile';
@@ -20,8 +21,10 @@ function App() {
       <div className="min-h-screen bg-raices-light">
         <Navbar />
         <Routes>
+          {/* Rutas Públicas */}
           <Route path="/" element={<Home />} />
           <Route path="/tienda" element={<Store />} />
+          <Route path="/tienda/producto/:id" element={<ProductDetail />} />
           <Route path="/comprobador" element={<QRModule />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />

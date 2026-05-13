@@ -1,35 +1,31 @@
 package raicespoblanas.app.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+
 @Entity
 @Table(name = "artisans")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Artisan {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long artisanId; // CAMBIADO de artisan_id
+    private Long artisanId; // No lleva GeneratedValue porque hereda el del User
 
     @OneToOne
+    @MapsId // Esta anotación vincula el ID de Artisan con el ID de User
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(columnDefinition = "TEXT")
     private String bio;
-    private String municipality;
-    
-    @Lob
-    private byte[] profile_picture;
+    // En tu archivo Artisan.java
+    @Column(columnDefinition = "TEXT")
+    private String profilePicture;
 
-    private boolean is_verified = false;
+    private String municipality;
+
+    private boolean isVerified = false;
 }

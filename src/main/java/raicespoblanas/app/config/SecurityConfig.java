@@ -20,7 +20,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // 1. Inyecta tu filtro de JWT (Asegúrate de que el nombre coincida con tu clase)
     @Autowired
     private raicespoblanas.app.config.JwtAuthenticationFilter jwtAuthFilter;
 
@@ -31,35 +30,39 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // PRIMERO: Las rutas públicas (de lo más específico a lo general)
+                        // 1. RUTAS PÚBLICAS (Todos pueden entrar sin Token)
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/products/catalog").permitAll()
                         .requestMatchers("/api/products/verify/**").permitAll()
                         .requestMatchers("/api/products/search/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
 
-                        // SEGUNDO: Rutas de gestión (requieren ROL)
-                        // Usamos hasRole; Spring buscará "ROLE_ARTISAN" en la base de datos
+                        // Permitir ver detalles de CUALQUIER producto para la tienda
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/products/**").permitAll()
+
+                        // 2. RUTAS PRIVADAS (Requieren Rol de Artesano o Admin)
+                        // Gestión de Perfil de Artesano
+                        .requestMatchers("/api/artisans/**").hasAnyRole("ARTISAN", "ADMIN")
+
+                        // Gestión de Inventario (Solo artesanos crean/borran)
                         .requestMatchers("/api/products/add").hasAnyRole("ARTISAN", "ADMIN")
                         .requestMatchers("/api/products/my-products/**").hasAnyRole("ARTISAN", "ADMIN")
                         .requestMatchers("/api/products/update/**").hasAnyRole("ARTISAN", "ADMIN")
                         .requestMatchers("/api/products/delete/**").hasAnyRole("ARTISAN", "ADMIN")
 
-                        // TERCERO: Swagger y documentación
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
-
+                        // 3. CUALQUIER OTRA PETICIÓN: Requiere estar logueado
                         .anyRequest().authenticated()
                 );
 
-        // 2. ¡ESTO ES LO QUE FALTA! Añadir el filtro antes del filtro de usuario/contraseña
+        // Añadir el filtro de JWT antes del filtro estándar de Spring
         http.addFilterBefore(jwtAuthFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Encriptación BCrypt para las contraseñas
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -70,7 +73,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // Puerto de Vite
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

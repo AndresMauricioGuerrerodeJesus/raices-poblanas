@@ -2,31 +2,43 @@ package raicespoblanas.app.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import raicespoblanas.app.service.ArtisanService;
+import org.springframework.web.bind.annotation.*;
+import raicespoblanas.app.model.Artisan;
+import raicespoblanas.app.repository.ArtisanRepository;
 
 @RestController
 @RequestMapping("/api/artisans")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:5173")
 public class ArtisanController {
 
     @Autowired
-    private ArtisanService artisanService;
+    private ArtisanRepository artisanRepository;
 
-    // VISTA: Biografía del Artesano
-    @GetMapping("/profile/{userId}")
-    public ResponseEntity<?> getProfile(@PathVariable Long userId) {
-        return ResponseEntity.ok(artisanService.getProfile(userId));
+    // Obtener perfil actual
+    @GetMapping("/{id}")
+    public ResponseEntity<Artisan> getProfile(@PathVariable Long id) {
+        return artisanRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    // VISTA: Tablero (Dashboard)
-    @GetMapping("/dashboard/{artisanId}")
-    public ResponseEntity<?> getStats(@PathVariable Long artisanId) {
-        return ResponseEntity.ok(artisanService.getDashboardStats(artisanId));
+    // Actualizar biografía y comunidad
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateProfile(@PathVariable Long id, @RequestBody Artisan details) {
+        try {
+            Artisan artisan = artisanRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Artesano no encontrado"));
+
+            // Solo actualizamos los campos de la biografía, NO el ID ni el objeto User
+            artisan.setBio(details.getBio());
+            artisan.setMunicipality(details.getMunicipality());
+            artisan.setProfilePicture(details.getProfilePicture());
+
+            artisanRepository.save(artisan);
+            return ResponseEntity.ok("Perfil actualizado exitosamente");
+        } catch (Exception e) {
+            e.printStackTrace(); // Esto imprimirá el error real en tu consola de IntelliJ
+            return ResponseEntity.status(500).body("Error al actualizar: " + e.getMessage());
+        }
     }
 }
