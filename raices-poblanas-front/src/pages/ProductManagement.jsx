@@ -8,61 +8,74 @@ const ProductManagement = () => {
   const [loading, setLoading] = useState(true);
 
   // Estado del formulario (Coincide con tu modelo Java Product)
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    price: '',
-    materials: '',
-    stockQuantity: 1, // Por defecto 1 para piezas únicas
-    category: { categoryId: 1 }, // Valor inicial temporal
-    status: 'Available'
-  });
+const [formData, setFormData] = useState({
+  name: '',
+  description: '',
+  price: '',
+  materials: '',
+  imageUrl: '', // Asegúrate de que no sea null
+  stockQuantity: 1
+});
 
   // Cargar productos del artesano al iniciar
   useEffect(() => {
     fetchProducts();
   }, []);
 
-  const fetchProducts = async () => {
-    try {
-      const user = JSON.parse(localStorage.getItem('user'));
-      // Ajusta la URL si tu artisanId es diferente del userId
-      const response = await fetch(`http://localhost:8080/api/products/my-products/${user.id || 1}`);
+const fetchProducts = async () => {
+  try {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const token = localStorage.getItem('token'); // Recuperar el token
+
+    const response = await fetch(`http://localhost:8080/api/products/my-products/${user.userId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}` // <--- ENVIAR EL TOKEN
+      }
+    });
+
+    if (response.ok) {
       const data = await response.json();
       setProducts(data);
-      setLoading(false);
-    } catch (err) {
-      console.error("Error cargando productos:", err);
-      setLoading(false);
     }
+    setLoading(false);
+  } catch (err) {
+    console.error("Error cargando productos:", err);
+    setLoading(false);
+  }
+};
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const user = JSON.parse(localStorage.getItem('user'));
+  const token = localStorage.getItem('token');
+
+  const productToSave = {
+    ...formData,
+    artisan: { artisanId: user.userId }, // Vincula al artesano logueado
+    category: { categoryId: 1 },
+    status: 'Available'
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const url = editingProduct
-      ? `http://localhost:8080/api/products/update/${editingProduct.productId}`
-      : 'http://localhost:8080/api/products/add';
+  try {
+    const response = await fetch('http://localhost:8080/api/products/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // <--- TOKEN OBLIGATORIO
+      },
+      body: JSON.stringify(productToSave)
+    });
 
-    const method = editingProduct ? 'PUT' : 'POST';
-
-    try {
-      const response = await fetch(url, {
-        method: method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.ok) {
-        alert(editingProduct ? "Producto actualizado" : "¡Producto creado con éxito!");
-        setShowForm(false);
-        setEditingProduct(null);
-        fetchProducts(); // Recargar lista
-      }
-    } catch (err) {
-      alert("Error al guardar el producto");
+    if (response.ok) {
+      alert("¡Artesanía publicada con éxito!");
+      setShowForm(false);
+      fetchProducts();
+    } else {
+      alert("Error 403: El servidor rechazó el token o el rol no tiene permiso.");
     }
-  };
-
+  } catch (err) {
+    console.error("Error:", err);
+  }
+};
   const handleDelete = async (id) => {
     if(window.confirm("¿Seguro que quieres eliminar esta pieza?")) {
       await fetch(`http://localhost:8080/api/products/delete/${id}`, { method: 'DELETE' });
@@ -117,16 +130,38 @@ const ProductManagement = () => {
                 />
               </div>
 
-              <div className="md:col-span-2">
-                <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">URL de la Imagen</label>
-                <input
-                  type="text"
-                  placeholder="https://ejemplo.com/foto-artesania.jpg"
-                  className="w-full px-5 py-3 rounded-xl bg-slate-50 border border-slate-100 outline-none focus:border-raices-green"
-                  value={formData.imageUrl}
-                  onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
-                />
-              </div>
+{/* --- CAMBIO: De Texto a Selector de Archivo Local --- */}
+<div className="md:col-span-2">
+  <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
+    Foto de la Artesanía (Seleccionar archivo local)
+  </label>
+  <input
+    type="file"
+    accept="image/*"
+    onChange={(e) => {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        // Esto convierte la foto en el texto Base64 que espera tu Backend
+        setFormData({ ...formData, imageUrl: reader.result });
+      };
+      if (file) reader.readAsDataURL(file);
+    }}
+    className="w-full px-5 py-3 rounded-xl bg-slate-50 border border-slate-100 outline-none focus:border-raices-green"
+  />
+
+  {/* Vista previa de la imagen para que el artesano vea qué subió */}
+  {formData.imageUrl && (
+    <div className="mt-4">
+      <p className="text-[10px] text-slate-400 font-bold uppercase mb-2">Vista Previa:</p>
+      <img
+        src={formData.imageUrl}
+        alt="Preview"
+        className="h-32 w-32 object-cover rounded-xl border-2 border-raices-green/20"
+      />
+    </div>
+  )}
+</div>
 
               <div>
                 <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Materiales</label>

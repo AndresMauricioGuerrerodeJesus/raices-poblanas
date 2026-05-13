@@ -2,6 +2,7 @@ package raicespoblanas.app.config;
 
 import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,37 +16,46 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    // 1. Inyecta tu filtro de JWT (Asegúrate de que el nombre coincida con tu clase)
+    @Autowired
+    private raicespoblanas.app.config.JwtAuthenticationFilter jwtAuthFilter;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Desactivado para APIs REST con JWT
+                .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Sin estado
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                // Rutas públicas: Auth, Catálogo y el Comprobador QR
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/products/catalog").permitAll()
-                .requestMatchers("/api/products/verify/**").permitAll()
-                .requestMatchers("/v3/api-docs/**",
-                        "/v3/api-docs.yaml",
-                        "/swagger-ui/**",
-                        "/swagger-ui.html",
-                        "/swagger-resources/**",
-                        "/webjars/**").permitAll()
-                // Rutas protegidas: Requieren Token
-                .requestMatchers("/api/orders/**").hasAnyRole("CUSTOMER", "ADMIN")
-                .requestMatchers("/api/artisans/dashboard/**").hasAnyRole("ARTISAN", "ADMIN")
-                .requestMatchers("/api/users/wallet/**").authenticated()
-                .anyRequest().authenticated()
+                        // PRIMERO: Las rutas públicas (de lo más específico a lo general)
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/products/catalog").permitAll()
+                        .requestMatchers("/api/products/verify/**").permitAll()
+                        .requestMatchers("/api/products/search/**").permitAll()
+
+                        // SEGUNDO: Rutas de gestión (requieren ROL)
+                        // Usamos hasRole; Spring buscará "ROLE_ARTISAN" en la base de datos
+                        .requestMatchers("/api/products/add").hasAnyRole("ARTISAN", "ADMIN")
+                        .requestMatchers("/api/products/my-products/**").hasAnyRole("ARTISAN", "ADMIN")
+                        .requestMatchers("/api/products/update/**").hasAnyRole("ARTISAN", "ADMIN")
+                        .requestMatchers("/api/products/delete/**").hasAnyRole("ARTISAN", "ADMIN")
+
+                        // TERCERO: Swagger y documentación
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
+
+                        .anyRequest().authenticated()
                 );
+
+        // 2. ¡ESTO ES LO QUE FALTA! Añadir el filtro antes del filtro de usuario/contraseña
+        http.addFilterBefore(jwtAuthFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {

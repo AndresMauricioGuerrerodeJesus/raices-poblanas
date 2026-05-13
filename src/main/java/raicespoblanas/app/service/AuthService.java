@@ -52,4 +52,9 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         return user.getRole().getName(); // Devuelve "ROLE_ARTISAN", "ROLE_CUSTOMER", etc.
     }
+    // Añade este método al final de la clase AuthService
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    }
 }
